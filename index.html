@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>직업계고 선취업 후진학 & 재직자 전형 대시보드</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Fonts (Noto Sans KR) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f8fafc;
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+    /* Modal Animation */
+    .modal-backdrop {
+      background-color: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+  <!-- Navigation Header -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo & Title -->
+        <div class="flex items-center space-x-3">
+          <div class="bg-indigo-600 text-white p-2.5 rounded-xl shadow-md shadow-indigo-200">
+            <i data-lucide="graduation-cap" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <span class="text-xs font-bold tracking-wider text-indigo-600 uppercase block">Vocational Pathways</span>
+            <h1 class="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+              선취업 후진학 & 재직자 전형 대시보드
+            </h1>
+          </div>
+        </div>
+
+        <!-- Desktop Nav & Action Buttons -->
+        <div class="hidden md:flex items-center space-x-3">
+          <a href="#faq-section" class="px-3 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-indigo-600 hover:bg-slate-50 transition">
+            <i data-lucide="help-circle" class="w-4 h-4 inline mr-1"></i> 전형 Q&A
+          </a>
+          <button onclick="openAddModal()" class="inline-flex items-center px-3.5 py-2 border border-slate-300 rounded-lg text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 shadow-sm transition">
+            <i data-lucide="plus" class="w-4 h-4 mr-1.5 text-indigo-600"></i> 대학 등록
+          </button>
+          <button onclick="exportJSON()" class="inline-flex items-center px-3.5 py-2 border border-indigo-600 rounded-lg text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition">
+            <i data-lucide="download" class="w-4 h-4 mr-1.5"></i> JSON 내보내기
+          </button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden flex items-center space-x-2">
+          <button onclick="openAddModal()" class="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg">
+            <i data-lucide="plus-circle" class="w-6 h-6"></i>
+          </button>
+          <a href="#faq-section" class="p-2 text-slate-600 hover:bg-slate-100 rounded-lg">
+            <i data-lucide="help-circle" class="w-6 h-6"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero / Introduction Banner -->
+  <section class="bg-gradient-to-r from-indigo-900 via-indigo-800 to-slate-900 text-white py-10 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="max-w-2xl">
+        <div class="inline-flex items-center gap-2 bg-indigo-500/30 border border-indigo-400/30 px-3 py-1 rounded-full text-xs font-semibold text-indigo-200 mb-3">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300"></i> 직업계고(특성화고/마이스터고) 졸업생 맞춤 가이드
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          일하면서 대학 학위까지, <span class="text-indigo-300">선취업 후진학</span>으로 꿈을 이어가세요!
+        </h2>
+        <p class="mt-2 text-slate-300 text-sm sm:text-base leading-relaxed">
+          재직자 특별전형, 평생학습자 전형 등 나에게 꼭 맞는 수시 전형 조건과 수업 방식, 제출 서류를 한눈에 비교하고 조회하세요.
+        </p>
+      </div>
+
+      <!-- Quick Stats Widget -->
+      <div class="grid grid-cols-3 gap-3 w-full md:w-auto min-w-[280px]">
+        <div class="bg-white/10 backdrop-blur border border-white/10 p-3 rounded-xl text-center">
+          <p class="text-xs text-indigo-200 font-medium">등록 대학</p>
+          <p id="stat-total" class="text-xl sm:text-2xl font-black text-white mt-0.5">0</p>
+        </div>
+        <div class="bg-white/10 backdrop-blur border border-white/10 p-3 rounded-xl text-center">
+          <p class="text-xs text-indigo-200 font-medium">수도권 대학</p>
+          <p id="stat-capital" class="text-xl sm:text-2xl font-black text-amber-300 mt-0.5">0</p>
+        </div>
+        <div class="bg-white/10 backdrop-blur border border-white/10 p-3 rounded-xl text-center">
+          <p class="text-xs text-indigo-200 font-medium">수능최저 없음</p>
+          <p id="stat-nocsat" class="text-xl sm:text-2xl font-black text-emerald-300 mt-0.5">0</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Search & Multi-Filter Bar Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-4">
+      <!-- Search Input -->
+      <div class="relative">
+        <i data-lucide="search" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+        <input 
+          type="text" 
+          id="searchInput" 
+          placeholder="대학명, 학과명, 키워드(예: 한양대, 소프트웨어, 야간 등)를 입력하세요..." 
+          class="w-full pl-11 pr-10 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+          oninput="applyFilters()"
+        >
+        <button id="clearSearch" onclick="resetSearchInput()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Select Filters Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <!-- Category Filter -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">전형 유형</label>
+          <select id="filterCategory" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="전체">전체 전형</option>
+            <option value="재직자 특별전형">재직자 특별전형</option>
+            <option value="선취업 후진학">선취업 후진학</option>
+            <option value="만학도/평생학습자">만학도/평생학습자 전형</option>
+          </select>
+        </div>
+
+        <!-- Region Filter -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">지역</label>
+          <select id="filterRegion" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="전체">전국 (전체)</option>
+            <option value="수도권">수도권 (서울/경기/인천)</option>
+            <option value="충청권">충청권 (대전/세종/충남북)</option>
+            <option value="경상권">경상권 (부산/대구/울산/경남북)</option>
+            <option value="전라권">전라권 (광주/전남북)</option>
+            <option value="강원/제주">강원 / 제주권</option>
+          </select>
+        </div>
+
+        <!-- Degree Filter -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">대학 구분</label>
+          <select id="filterDegree" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="전체">전체 (4년제/전문대)</option>
+            <option value="4년제">4년제 대학교</option>
+            <option value="전문대">전문대학교</option>
+          </select>
+        </div>
+
+        <!-- Schedule Filter -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 mb-1">수업 운영 방식</label>
+          <select id="filterSchedule" onchange="applyFilters()" class="w-full bg-slate-50 border border-slate-200 rounded-lg py-2 px-3 text-xs sm:text-sm font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <option value="전체">전체 수업방식</option>
+            <option value="주말">주말/토요일 수업</option>
+            <option value="야간">평일 야간 수업</option>
+            <option value="온라인">온·오프라인 병행</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Filter Reset Tag Row -->
+      <div class="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+        <div class="text-slate-500 font-medium">
+          검색 결과: <span id="resultCount" class="font-bold text-indigo-600">0</span>개 대학 학과
+        </div>
+        <button onclick="resetAllFilters()" class="text-slate-500 hover:text-indigo-600 flex items-center gap-1 font-medium transition">
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> 필터 초기화
+        </button>
+      </div>
+    </div>
+
+    <!-- Universities Cards Grid -->
+    <div id="cardsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Dynamic JS Rendering Cards will be placed here -->
+    </div>
+
+    <!-- Empty State Message -->
+    <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300">
+      <div class="inline-flex p-4 bg-slate-100 rounded-full text-slate-400 mb-3">
+        <i data-lucide="search-x" class="w-8 h-8"></i>
+      </div>
+      <h3 class="text-base font-bold text-slate-700">조건에 일치하는 대학 정보가 없습니다.</h3>
+      <p class="text-xs text-slate-500 mt-1">검색어를 바꾸거나 필터 조건을 변경해 보세요.</p>
+      <button onclick="resetAllFilters()" class="mt-4 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-lg text-xs font-semibold hover:bg-indigo-100 transition">
+        필터 초기화하기
+      </button>
+    </div>
+
+    <!-- Interactive FAQ & Guide Section -->
+    <section id="faq-section" class="pt-8">
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
+        <div class="flex items-center space-x-3 mb-6">
+          <div class="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
+            <i data-lucide="book-open-check" class="w-6 h-6"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">재직자 전형 & 선취업 후진학 필수 핵심 Q&A</h2>
+            <p class="text-xs text-slate-500">직업계고 학생 및 졸업 재직자가 가장 자주 묻는 질문 모음</p>
+          </div>
+        </div>
+
+        <!-- Accordion Items -->
+        <div class="space-y-3" id="faqAccordion">
+
+          <!-- FAQ Item 1 -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden transition">
+            <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-4 text-left bg-slate-50 hover:bg-slate-100 transition font-semibold text-slate-800 text-sm">
+              <span class="flex items-center gap-2">
+                <span class="text-indigo-600 font-bold">Q1.</span> 재직자 특별전형의 '재직기간 3년(36개월)' 기준은 어떻게 산정하나요?
+              </span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform transition-transform duration-200"></i>
+            </button>
+            <div class="hidden p-4 bg-white text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 space-y-2">
+              <p>• <strong>기준일:</strong> 보통 입학일(예: 3월 1일) 기준으로 총 재직기간 합산 3년(36개월) 이상이어야 합니다.</p>
+              <p>• <strong>합산 가능:</strong> 여러 회사를 이직한 경우, 이전 직장의 재직기간도 합산 적용됩니다. (단, 공백기간 제외)</p>
+              <p>• <strong>증빙 서류:</strong> 4대 보험 중 1개 이상의 자격득실확인서(국민연금, 건강보험 등) 또는 사업자등록증명으로 객관적 증명이 필요합니다.</p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 2 -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden transition">
+            <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-4 text-left bg-slate-50 hover:bg-slate-100 transition font-semibold text-slate-800 text-sm">
+              <span class="flex items-center gap-2">
+                <span class="text-indigo-600 font-bold">Q2.</span> 군 복무 기간도 재직 기간에 포함되나요?
+              </span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform transition-transform duration-200"></i>
+            </button>
+            <div class="hidden p-4 bg-white text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 space-y-2">
+              <p>• <strong>군 복무 합산 가능:</strong> 취업 후 입대한 경우, 군 복무 기간(의무복무)도 재직기간에 포함하여 계산해 줍니다.</p>
+              <p>• <strong>제출 서류:</strong> 주민등록초본(병역사항 기재) 또는 군복무 확인서를 증빙 자료로 함께 제출해야 합니다.</p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 3 -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden transition">
+            <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-4 text-left bg-slate-50 hover:bg-slate-100 transition font-semibold text-slate-800 text-sm">
+              <span class="flex items-center gap-2">
+                <span class="text-indigo-600 font-bold">Q3.</span> 희망사다리 장학금 I유형(고졸 후학습자 장학금) 지원 혜택은 어떤 것인가요?
+              </span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform transition-transform duration-200"></i>
+            </button>
+            <div class="hidden p-4 bg-white text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 space-y-2">
+              <p>• <strong>지원 대상:</strong> 고등학교 졸업 후 산업체 재직 기간이 2년 이상인 재학 중인 직장인 대학생.</p>
+              <p>• <strong>장학 혜택:</strong> 수혜 학기 등록금 <strong>전액 지원 (100%)</strong> (중소·중견기업 재직자 기준 / 대기업·비영리기관은 50%).</p>
+              <p>• <strong>의무 사항:</strong> 장학금 수혜 학기 수 × 4개월간 의무 재직 유지 조건이 부여됩니다.</p>
+            </div>
+          </div>
+
+          <!-- FAQ Item 4 -->
+          <div class="border border-slate-200 rounded-xl overflow-hidden transition">
+            <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-4 text-left bg-slate-50 hover:bg-slate-100 transition font-semibold text-slate-800 text-sm">
+              <span class="flex items-center gap-2">
+                <span class="text-indigo-600 font-bold">Q4.</span> 수시모집에서 수능 최저학력기준이나 출결이 비중이 높나요?
+              </span>
+              <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400 transform transition-transform duration-200"></i>
+            </button>
+            <div class="hidden p-4 bg-white text-xs sm:text-sm text-slate-600 leading-relaxed border-t border-slate-100 space-y-2">
+              <p>• 대부분의 특성화고 재직자 특별전형은 <strong>수능 최저학력기준이 없습니다 (100% 면제)</strong>.</p>
+              <p>• 평가 요소는 주로 <strong>학생부 서류 평가(성적, 생기부 기록) + 면접 평가</strong> 또는 서류 100%로 선발하므로 성실한 직무 및 학교생활 기록이 중요합니다.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-slate-900 text-slate-400 py-8 border-t border-slate-800 text-xs text-center">
+    <div class="max-w-7xl mx-auto px-4 space-y-2">
+      <p class="font-semibold text-slate-300">직업계고 학생을 위한 선취업 후진학 대시보드 (GitHub Open Source Project)</p>
+      <p>본 대시보드의 입학 정보는 모집 요강 변경에 따라 차이가 있을 수 있으므로 반드시 해당 대학 입학처 공식 웹사이트를 재확인하시기 바랍니다.</p>
+      <p class="text-slate-600 pt-2">Powered by HTML5, Tailwind CSS, JavaScript | Hosted on GitHub Pages</p>
+    </div>
+  </footer>
+
+  <!-- Detail Modal -->
+  <div id="detailModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200">
+      <div id="modalContent" class="p-6 sm:p-8 space-y-6">
+        <!-- Rendered dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Add New University Modal -->
+  <div id="addModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 modal-backdrop">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto border border-slate-200 p-6 sm:p-8 space-y-4">
+      <div class="flex justify-between items-center pb-3 border-b border-slate-200">
+        <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-5 h-5 text-indigo-600"></i> 신규 대학 전형 등록
+        </h3>
+        <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 p-1">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <form id="addUnivForm" onsubmit="handleAddNewUniv(event)" class="space-y-3 text-xs sm:text-sm">
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">대학명 *</label>
+          <input type="text" id="addUnivName" required placeholder="예: 중앙대학교" class="w-full border rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">지역 *</label>
+            <select id="addRegion" class="w-full border rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+              <option value="수도권">수도권</option>
+              <option value="충청권">충청권</option>
+              <option value="경상권">경상권</option>
+              <option value="전라권">전라권</option>
+              <option value="강원/제주">강원/제주</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">대학 구분 *</label>
+            <select id="addDegree" class="w-full border rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+              <option value="4년제">4년제</option>
+              <option value="전문대">전문대</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">전형 유형 *</label>
+            <select id="addCategory" class="w-full border rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+              <option value="재직자 특별전형">재직자 특별전형</option>
+              <option value="선취업 후진학">선취업 후진학</option>
+              <option value="만학도/평생학습자">만학도/평생학습자</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">모집 학과 *</label>
+            <input type="text" id="addDept" required placeholder="예: 글로벌융합공학부" class="w-full border rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">모집 인원 (명)</label>
+            <input type="number" id="addQuota" value="20" class="w-full border rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">수업 방식 *</label>
+            <select id="addSchedule" class="w-full border rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+              <option value="주말반 (토요일)">주말반 (토요일)</option>
+              <option value="평일 야간">평일 야간</option>
+              <option value="온·오프라인 병행">온·오프라인 병행</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">전형 방법 (서류/면접 등)</label>
+          <input type="text" id="addSelection" placeholder="예: 서류 60% + 면접 40%" class="w-full border rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">지원 자격요건</label>
+          <input type="text" id="addEligibility" placeholder="예: 특성화고 졸업 후 산업체 3년 이상 재직자" class="w-full border rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+
+        <div>
+          <label class="block font-semibold text-slate-700 mb-1">입학처 URL</label>
+          <input type="url" id="addUrl" placeholder="https://..." class="w-full border rounded-lg p-2.5 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none">
+        </div>
+
+        <div class="pt-3 flex justify-end gap-2">
+          <button type="button" onclick="closeAddModal()" class="px-4 py-2 border rounded-lg text-slate-600 font-medium hover:bg-slate-100">취소</button>
+          <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700">저장하기</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JavaScript Logic -->
+  <script>
+    // Sample Universities Data Set
+    const initialUniversities = [
+      {
+        id: 1,
+        name: "중앙대학교",
+        region: "수도권",
+        degree: "4년제",
+        category: "재직자 특별전형",
+        department: "지식경영학부",
+        quota: 154,
+        selection: "서류평가 100%",
+        csatMin: false,
+        schedule: "주말반 (토요일전일)",
+        eligibility: "특성화고/마이스터고 졸업 후 산업체 재직 경력 3년 이상 (입학일 기준)",
+        documents: ["재직증명서", "4대보험 자격득실확인서", "고등학교 학교생활기록부", "사업자등록증(기업)"],
+        officialUrl: "https://admission.cau.ac.kr",
+        note: "국가장학금 희망사다리 I유형(고졸 후학습자) 지원 대상학과"
+      },
+      {
+        id: 2,
+        name: "한양대학교",
+        region: "수도권",
+        degree: "4년제",
+        category: "재직자 특별전형",
+        department: "산업융합학부 (응용시스템전공)",
+        quota: 55,
+        selection: "서류 100%",
+        csatMin: false,
+        schedule: "평일 야간 & 온·오프라인 병행",
+        eligibility: "특성화고 졸업자 중 통산 3년 이상 산업체 재직자",
+        documents: ["재직증명서", "건강보험 자격득실확인서", "학생부 II"],
+        officialUrl: "https://go.hanyang.ac.kr",
+        note: "야간 및 온라인 강좌 병행 개설로 직장 생활과 유연한 병행 가능"
+      },
+      {
+        id: 3,
+        name: "명지대학교",
+        region: "수도권",
+        degree: "4년제",
+        category: "만학도/평생학습자",
+        department: "미래융합대학 (창업경영학과)",
+        quota: 30,
+        selection: "서류 70% + 면접 30%",
+        csatMin: false,
+        schedule: "주말반 (토요일)",
+        eligibility: "만 30세 이상 또는 특성화고 졸업 후 3년 이상 재직자",
+        documents: ["학교생활기록부", "재직증명서", "면접 기초자료"],
+        officialUrl: "https://enter.mju.ac.kr",
+        note: "LiFE 사업 선정 대학으로 평생학습 맞춤형 신입생 장학 혜택 풍부"
+      },
+      {
+        id: 4,
+        name: "충남대학교",
+        region: "충청권",
+        degree: "4년제",
+        category: "재직자 특별전형",
+        department: "리더십과고객만족학과",
+        quota: 30,
+        selection: "서류 60% + 면접 40%",
+        csatMin: false,
+        schedule: "평일 야간 & 토요일",
+        eligibility: "특성화고 등 졸업 후 산업체 재직 기간이 3년 이상인 자",
+        documents: ["재직증명서", "국민연금 또는 건강보험 가입증명서", "생기부"],
+        officialUrl: "https://ipsi.cnu.ac.kr",
+        note: "거세 국립대학교로 저렴한 등록금 및 다양한 후학습 장학 혜택 제공"
+      },
+      {
+        id: 5,
+        name: "공주대학교",
+        region: "충청권",
+        degree: "4년제",
+        category: "선취업 후진학",
+        department: "스마트수산자원학과",
+        quota: 20,
+        selection: "서류 100%",
+        csatMin: false,
+        schedule: "온·오프라인 병행",
+        eligibility: "직업계고 졸업예정자 또는 졸업 후 채용 확정자/재직자",
+        documents: ["졸업(예정)증명서", "채용확인서 또는 재직증명서"],
+        officialUrl: "https://ipsi.kongju.ac.kr",
+        note: "지역 신산업 연계 선취업 후진학 계약학과 과정"
+      },
+      {
+        id: 6,
+        name: "경상국립대학교",
+        region: "경상권",
+        degree: "4년제",
+        category: "재직자 특별전형",
+        department: "기계융합공학과",
+        quota: 25,
+        selection: "서류 100%",
+        csatMin: false,
+        schedule: "주말반 (토요일)",
+        eligibility: "특성화고·마이스터고 졸업 후 3년 이상 산업체 재직자",
+        documents: ["재직증명서", "4대보험 자격확인서", "학교생활기록부"],
+        officialUrl: "https://new.gnu.ac.kr",
+        note: "경상남도 지역 제조 산학협력 특화 학과"
+      },
+      {
+        id: 7,
+        name: "동의과학대학교",
+        region: "경상권",
+        degree: "전문대",
+        category: "선취업 후진학",
+        department: "스마트호스피탈리티과",
+        quota: 18,
+        selection: "서류 40% + 면접 60%",
+        csatMin: false,
+        schedule: "평일 야간",
+        eligibility: "직업계고 졸업자 및 산업체 근무자",
+        documents: ["고교 졸업증명서", "재직 증빙서류"],
+        officialUrl: "https://www.dit.ac.kr",
+        note: "2년제 전문학사 학위 취득 후 4년제 전형 연계 가능"
+      },
+      {
+        id: 8,
+        name: "전북대학교",
+        region: "전라권",
+        degree: "4년제",
+        category: "재직자 특별전형",
+        department: "공공인재학부 (야간)",
+        quota: 22,
+        selection: "서류 70% + 면접 30%",
+        csatMin: false,
+        schedule: "평일 야간",
+        eligibility: "특성화고 졸업 후 3년 이상 재직 중인 자",
+        documents: ["재직증명서", "건강보험 자격득실확인서", "학생부"],
+        officialUrl: "https://enter.jbnu.ac.kr",
+        note: "공공기관 및 지역 인재 채용 연계 커리큘럼 제공"
+      }
+    ];
+
+    // State variable
+    let universities = [...initialUniversities];
+
+    // On Load Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      renderCards(universities);
+      updateStats();
+    });
+
+    // Render Cards Function
+    function renderCards(data) {
+      const grid = document.getElementById('cardsGrid');
+      const emptyState = document.getElementById('emptyState');
+      const resultCount = document.getElementById('resultCount');
+
+      resultCount.innerText = data.length;
+
+      if (data.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+
+      grid.innerHTML = data.map(item => {
+        // Category Badge Colors
+        let categoryColor = "bg-indigo-50 text-indigo-700 border-indigo-200";
+        if (item.category === "선취업 후진학") categoryColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+        if (item.category === "만학도/평생학습자") categoryColor = "bg-amber-50 text-amber-700 border-amber-200";
+
+        return `
+          <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden group">
+            <div class="p-5 space-y-3">
+              <!-- Top Badges -->
+              <div class="flex items-center justify-between gap-2 flex-wrap">
+                <span class="text-[11px] font-semibold px-2.5 py-1 rounded-full border ${categoryColor}">
+                  ${item.category}
+                </span>
+                <div class="flex gap-1.5 text-[11px]">
+                  <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">${item.region}</span>
+                  <span class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">${item.degree}</span>
+                </div>
+              </div>
+
+              <!-- Title & Department -->
+              <div>
+                <h3 class="text-base font-bold text-slate-900 group-hover:text-indigo-600 transition flex items-center gap-1.5">
+                  ${item.name}
+                </h3>
+                <p class="text-sm font-semibold text-slate-700 mt-0.5 flex items-center gap-1">
+                  <i data-lucide="book-open" class="w-3.5 h-3.5 text-indigo-500"></i> ${item.department}
+                </p>
+              </div>
+
+              <!-- Quick Info List -->
+              <div class="bg-slate-50 p-3 rounded-xl space-y-1.5 text-xs text-slate-600">
+                <div class="flex justify-between">
+                  <span class="text-slate-400">모집 인원</span>
+                  <span class="font-semibold text-slate-800">${item.quota}명 모집</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">전형 방식</span>
+                  <span class="font-semibold text-slate-800">${item.selection}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">수업 운영</span>
+                  <span class="font-semibold text-indigo-600">${item.schedule}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400">수능 최저</span>
+                  <span class="font-semibold text-emerald-600">${item.csatMin ? '있음' : '없음 (면제)'}</span>
+                </div>
+              </div>
+
+              <!-- Eligibility Brief -->
+              <p class="text-xs text-slate-500 line-clamp-2 pt-1">
+                <span class="font-semibold text-slate-700">자격:</span> ${item.eligibility}
+              </p>
+            </div>
+
+            <!-- Card Footer Buttons -->
+            <div class="px-5 py-3.5 bg-slate-50/80 border-t border-slate-100 flex items-center justify-between gap-2">
+              <button onclick="openDetailModal(${item.id})" class="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 hover:underline">
+                상세 요강 & 서류 <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+              </button>
+              <a href="${item.officialUrl}" target="_blank" rel="noopener" class="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1">
+                입학처 <i data-lucide="external-link" class="w-3 h-3"></i>
+              </a>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      lucide.createIcons();
+    }
+
+    // Filter Logic
+    function applyFilters() {
+      const searchVal = document.getElementById('searchInput').value.toLowerCase().trim();
+      const catVal = document.getElementById('filterCategory').value;
+      const regVal = document.getElementById('filterRegion').value;
+      const degVal = document.getElementById('filterDegree').value;
+      const schVal = document.getElementById('filterSchedule').value;
+
+      // Show/Hide Clear button for search input
+      const clearBtn = document.getElementById('clearSearch');
+      if (searchVal !== '') {
+        clearBtn.classList.remove('hidden');
+      } else {
+        clearBtn.classList.add('hidden');
+      }
+
+      const filtered = universities.filter(u => {
+        // Search Keyword Match
+        const matchSearch = u.name.toLowerCase().includes(searchVal) || 
+                            u.department.toLowerCase().includes(searchVal) ||
+                            u.category.toLowerCase().includes(searchVal);
+
+        // Category Filter Match
+        const matchCategory = catVal === '전체' || u.category === catVal;
+
+        // Region Filter Match
+        const matchRegion = regVal === '전체' || u.region === regVal;
+
+        // Degree Filter Match
+        const matchDegree = degVal === '전체' || u.degree === degVal;
+
+        // Schedule Filter Match
+        let matchSchedule = true;
+        if (schVal === '주말') matchSchedule = u.schedule.includes('주말') || u.schedule.includes('토요일');
+        if (schVal === '야간') matchSchedule = u.schedule.includes('야간');
+        if (schVal === '온라인') matchSchedule = u.schedule.includes('온라인') || u.schedule.includes('병행');
+
+        return matchSearch && matchCategory && matchRegion && matchDegree && matchSchedule;
+      });
+
+      renderCards(filtered);
+    }
+
+    // Reset Search Input
+    function resetSearchInput() {
+      document.getElementById('searchInput').value = '';
+      applyFilters();
+    }
+
+    // Reset All Filters
+    function resetAllFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('filterCategory').value = '전체';
+      document.getElementById('filterRegion').value = '전체';
+      document.getElementById('filterDegree').value = '전체';
+      document.getElementById('filterSchedule').value = '전체';
+      applyFilters();
+    }
+
+    // Update Banner Stats
+    function updateStats() {
+      document.getElementById('stat-total').innerText = universities.length;
+      document.getElementById('stat-capital').innerText = universities.filter(u => u.region === '수도권').length;
+      document.getElementById('stat-nocsat').innerText = universities.filter(u => !u.csatMin).length;
+    }
+
+    // FAQ Accordion Toggle
+    function toggleFaq(btn) {
+      const content = btn.nextElementSibling;
+      const icon = btn.querySelector('[data-lucide="chevron-down"]');
+
+      if (content.classList.contains('hidden')) {
+        content.classList.remove('hidden');
+        if (icon) icon.style.transform = 'rotate(180deg)';
+      } else {
+        content.classList.add('hidden');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      }
+    }
+
+    // Open Detail Modal
+    function openDetailModal(id) {
+      const item = universities.find(u => u.id === id);
+      if (!item) return;
+
+      const modal = document.getElementById('detailModal');
+      const container = document.getElementById('modalContent');
+
+      container.innerHTML = `
+        <div class="flex justify-between items-start pb-4 border-b border-slate-100">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700">${item.category}</span>
+              <span class="text-xs text-slate-500">${item.region} | ${item.degree}</span>
+            </div>
+            <h2 class="text-xl font-extrabold text-slate-900">${item.name} - ${item.department}</h2>
+          </div>
+          <button onclick="closeDetailModal()" class="text-slate-400 hover:text-slate-600 p-1">
+            <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+        </div>
+
+        <div class="space-y-4 text-xs sm:text-sm text-slate-700">
+          <div class="grid grid-cols-2 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+            <div><span class="text-slate-400 block text-xs">모집 인원</span> <span class="font-bold text-slate-800">${item.quota} 명</span></div>
+            <div><span class="text-slate-400 block text-xs">수업 운영 방식</span> <span class="font-bold text-indigo-600">${item.schedule}</span></div>
+            <div><span class="text-slate-400 block text-xs">전형 방법</span> <span class="font-bold text-slate-800">${item.selection}</span></div>
+            <div><span class="text-slate-400 block text-xs">수능 최저학력기준</span> <span class="font-bold text-emerald-600">${item.csatMin ? '있음' : '없음 (면제)'}</span></div>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-slate-900 mb-1 flex items-center gap-1.5 text-sm">
+              <i data-lucide="check-circle-2" class="w-4 h-4 text-indigo-600"></i> 지원 자격 조건
+            </h4>
+            <p class="bg-slate-50 p-3 rounded-lg text-slate-700 leading-relaxed">${item.eligibility}</p>
+          </div>
+
+          <div>
+            <h4 class="font-bold text-slate-900 mb-1 flex items-center gap-1.5 text-sm">
+              <i data-lucide="file-text" class="w-4 h-4 text-indigo-600"></i> 필수 제출 증빙 서류
+            </h4>
+            <ul class="list-disc list-inside bg-slate-50 p-3 rounded-lg space-y-1 text-slate-700">
+              ${(item.documents || ["재직증명서", "4대보험 자격득실확인서", "학교생활기록부"]).map(doc => `<li>${doc}</li>`).join('')}
+            </ul>
+          </div>
+
+          ${item.note ? `
+            <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 text-xs flex gap-2 items-start">
+              <i data-lucide="info" class="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5"></i>
+              <div><strong class="font-semibold">참고사항 / 혜택:</strong> ${item.note}</div>
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="pt-4 border-t border-slate-100 flex justify-between items-center gap-3">
+          <a href="${item.officialUrl}" target="_blank" rel="noopener" class="w-full text-center px-4 py-2.5 bg-indigo-600 text-white rounded-xl font-semibold hover:bg-indigo-700 transition flex items-center justify-center gap-1.5">
+            ${item.name} 공식 입학처 방문하기 <i data-lucide="external-link" class="w-4 h-4"></i>
+          </a>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detailModal').classList.add('hidden');
+    }
+
+    // Add New University Modal Controls
+    function openAddModal() {
+      document.getElementById('addModal').classList.remove('hidden');
+    }
+
+    function closeAddModal() {
+      document.getElementById('addModal').classList.add('hidden');
+    }
+
+    function handleAddNewUniv(e) {
+      e.preventDefault();
+
+      const newUniv = {
+        id: Date.now(),
+        name: document.getElementById('addUnivName').value,
+        region: document.getElementById('addRegion').value,
+        degree: document.getElementById('addDegree').value,
+        category: document.getElementById('addCategory').value,
+        department: document.getElementById('addDept').value,
+        quota: parseInt(document.getElementById('addQuota').value) || 0,
+        selection: document.getElementById('addSelection').value || "서류 100%",
+        csatMin: false,
+        schedule: document.getElementById('addSchedule').value,
+        eligibility: document.getElementById('addEligibility').value || "재직자 자격 조건 충족자",
+        documents: ["재직증명서", "4대보험 자격득실확인서", "학교생활기록부"],
+        officialUrl: document.getElementById('addUrl').value || "https://",
+        note: "사용자 직접 등록 대학 데이터"
+      };
+
+      universities.unshift(newUniv);
+      applyFilters();
+      updateStats();
+      closeAddModal();
+      document.getElementById('addUnivForm').reset();
+      alert('신규 대학 전형 정보가 성공적으로 추가되었습니다!');
+    }
+
+    // Export Data as JSON file for GitHub Update
+    function exportJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(universities, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "universities_data.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+  </script>
+</body>
+</html>
