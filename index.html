@@ -1,1 +1,303 @@
-univName,region,type,category,department,capacity,eligibility,selection,classType,docCheck,link
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>직업계고 학생을 위한 진학·진로 통합 대시보드</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Pretendard', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+
+    <!-- Header -->
+    <header class="bg-indigo-900 text-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <span class="bg-indigo-700 text-indigo-100 text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide">직업계고 진학 가이드</span>
+                <h1 class="text-2xl md:text-3xl font-bold mt-2">선취업 후진학 · 재직자 특별전형 대시보드</h1>
+                <p class="text-indigo-200 text-sm mt-1">특성화고·마이스터고 졸업생 및 재직자를 위한 맞춤형 대학 진학 정보 플랫폼</p>
+            </div>
+            <div class="mt-4 md:mt-0 flex gap-2">
+                <button onclick="openAddModal()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-medium shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> 대학 정보 등록
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- Search & Filter Section -->
+        <section class="bg-white rounded-xl shadow-sm p-6 mb-8 border border-slate-100">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <!-- Search Box -->
+                <div class="md:col-span-4">
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">통합 검색</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </span>
+                        <input type="text" id="searchInput" oninput="filterData()" placeholder="대학명, 학과명, 키워드 검색 (예: 한밭대, 디자인, 융합)" class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                    </div>
+                </div>
+
+                <!-- Region Filter -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">지역 구분</label>
+                    <select id="regionFilter" onchange="filterData()" class="w-full p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                        <option value="">전체 지역</option>
+                        <option value="수도권">수도권</option>
+                        <option value="충청권">충청권</option>
+                        <option value="호남권">호남권</option>
+                        <option value="대구경북권">대구경북권</option>
+                        <option value="부울경">부울경</option>
+                        <option value="강원제주권">강원제주권</option>
+                    </select>
+                </div>
+
+                <!-- Admission Type Filter -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">전형 유형</label>
+                    <select id="categoryFilter" onchange="filterData()" class="w-full p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                        <option value="">전체 전형</option>
+                        <option value="재직자">재직자 특별전형</option>
+                        <option value="선취업후진학">선취업 후진학</option>
+                        <option value="만학도평생학습자">만학도·평생학습자</option>
+                    </select>
+                </div>
+
+                <!-- Univ Type Filter -->
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1">대학 구분</label>
+                    <select id="typeFilter" onchange="filterData()" class="w-full p-2.5 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                        <option value="">전체 구분</option>
+                        <option value="4년제">4년제 대학</option>
+                        <option value="전문대">전문대학교</option>
+                    </select>
+                </div>
+
+                <!-- Reset Button -->
+                <div class="flex items-end">
+                    <button onclick="resetFilters()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-medium py-2.5 rounded-lg text-sm transition">
+                        필터 초기화
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Info & Count -->
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-bold text-slate-800" id="resultCount">검색 결과 (0개 대학)</h2>
+            <span class="text-xs text-slate-500">* 각 대학의 모집요강 및 홈페이지를 꼭 다시 확인하세요.</span>
+        </div>
+
+        <!-- Cards Grid -->
+        <div id="cardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- JavaScript가 데이터를 채워넣습니다 -->
+        </div>
+
+    </main>
+
+    <!-- Add Univ Modal -->
+    <div id="addModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 border-b pb-3">
+                <h3 class="text-lg font-bold text-slate-800">새로운 대학 정보 등록</h3>
+                <button onclick="closeAddModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form id="addForm" onsubmit="saveNewUniv(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">대학명</label>
+                    <input type="text" id="newUnivName" required placeholder="예: 한양대학교" class="w-full p-2 border rounded-lg text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">지역</label>
+                        <select id="newRegion" class="w-full p-2 border rounded-lg text-sm">
+                            <option value="수도권">수도권</option>
+                            <option value="충청권">충청권</option>
+                            <option value="호남권">호남권</option>
+                            <option value="대구경북권">대구경북권</option>
+                            <option value="부울경">부울경</option>
+                            <option value="강원제주권">강원제주권</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">대학 구분</label>
+                        <select id="newType" class="w-full p-2 border rounded-lg text-sm">
+                            <option value="4년제">4년제</option>
+                            <option value="전문대">전문대</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">전형 구분</label>
+                        <select id="newCategory" class="w-full p-2 border rounded-lg text-sm">
+                            <option value="재직자">재직자 특별전형</option>
+                            <option value="선취업후진학">선취업 후진학</option>
+                            <option value="만학도평생학습자">만학도·평생학습자</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">모집 인원</label>
+                        <input type="text" id="newCapacity" placeholder="예: 15명" class="w-full p-2 border rounded-lg text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">모집 학과명</label>
+                    <input type="text" id="newDepartment" required placeholder="예: 스마트융합공학과" class="w-full p-2 border rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">지원 자격</label>
+                    <input type="text" id="newEligibility" placeholder="예: 특성화고 졸업 후 산업체 재직 3년 이상" class="w-full p-2 border rounded-lg text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">전형 방법</label>
+                        <input type="text" id="newSelection" placeholder="예: 서류 100%" class="w-full p-2 border rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">수업 운영 방식</label>
+                        <input type="text" id="newClassType" placeholder="예: 토요일 전일제" class="w-full p-2 border rounded-lg text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">제출 서류</label>
+                    <input type="text" id="newDocCheck" placeholder="예: 재직증명서, 건강보험자격득실확인서" class="w-full p-2 border rounded-lg text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 mb-1">대학 입학처 링크</label>
+                    <input type="url" id="newLink" placeholder="https://..." class="w-full p-2 border rounded-lg text-sm">
+                </div>
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="closeAddModal()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-sm">취소</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium">추가하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Data & Logic -->
+    <script>
+        // 전국 주요 대학 샘플 데이터베이스
+        let universities = [
+            { id: 1, univName: "건국대학교", region: "수도권", type: "4년제", category: "재직자", department: "K뷰티산업융합학과", capacity: 15, eligibility: "특성화고 등 졸업 후 재직 3년 이상", selection: "서류 100%", classType: "주중 야간 및 주말", docCheck: "재직증명서, 4대보험 가입확인서", link: "https://www.konkuk.ac.kr" },
+            { id: 2, univName: "경희대학교", region: "수도권", type: "4년제", category: "재직자", department: "Global정경학부", capacity: 20, eligibility: "특성화고 등 졸업 후 재직 3년 이상", selection: "학생부종합(서류+면접)", classType: "주말 전일제", docCheck: "재직증명서, 건강보험자격득실확인서", link: "https://www.khu.ac.kr" },
+            { id: 3, univName: "동국대학교", region: "수도권", type: "4년제", category: "재직자", department: "사회복지상담학과", capacity: 22, eligibility: "특성화고 등 졸업 후 재직 3년 이상", selection: "서류종합평가", classType: "야간 및 주말", docCheck: "재직증명서 필수", link: "https://www.dongguk.edu" },
+            { id: 4, univName: "명지대학교", region: "수도권", type: "4년제", category: "재직자", department: "통일외교학과", capacity: 18, eligibility: "특성화고 등 졸업 후 재직 3년 이상", selection: "학생부종합(면접)", classType: "주말반", docCheck: "재직증명서", link: "https://www.mju.ac.kr" },
+            { id: 5, univName: "중앙대학교", region: "수도권", type: "4년제", category: "재직자", department: "지식경영학부", capacity: 45, eligibility: "특성화고 등 졸업 후 재직 3년 이상", selection: "서류 100%", classType: "주말 온·오프라인", docCheck: "재직증명서, 자격득실확인서", link: "https://www.cau.ac.kr" },
+            { id: 6, univName: "한양대학교", region: "수도권", type: "4년제", category: "재직자", department: "글로벌융합학부", capacity: 60, eligibility: "특성화고 등 졸업 후 재직 3년 이상", selection: "학생부종합(서류)", classType: "토요일 전일제", docCheck: "재직증명서, 고교졸업증명서", link: "https://www.hanyang.ac.kr" },
+            { id: 7, univName: "국립한밭대학교", region: "충청권", type: "4년제", category: "재직자", department: "융합디자인학과", capacity: 20, eligibility: "특성화고 졸업 후 재직 3년 이상", selection: "서류종합평가", classType: "토요일 전일제 + 온라인", docCheck: "재직증명서, 건강보험자격득실", link: "https://www.hanbat.ac.kr" },
+            { id: 8, univName: "충남대학교", region: "충청권", type: "4년제", category: "재직자", department: "스마트융합학부", capacity: 15, eligibility: "특성화고 졸업 후 재직 3년 이상", selection: "학생부종합", classType: "주중 야간 / 주말", docCheck: "재직증명서", link: "https://www.cnu.ac.kr" },
+            { id: 9, univName: "부경대학교", region: "부울경", type: "4년제", category: "재직자", department: "기계플랜트공학과", capacity: 25, eligibility: "특성화고 졸업 후 재직 3년 이상", selection: "서류 100%", classType: "주말 전일제", docCheck: "재직증명서", link: "https://www.pknu.ac.kr" },
+            { id: 10, univName: "영남대학교", region: "대구경북권", type: "4년제", category: "재직자", department: "소프트웨어융합학과", capacity: 20, eligibility: "특성화고 졸업 후 재직 3년 이상", selection: "면접고사", classType: "주말반", docCheck: "재직증명서", link: "https://www.yu.ac.kr" }
+        ];
+
+        function renderCards(data) {
+            const grid = document.getElementById('cardGrid');
+            const countElem = document.getElementById('resultCount');
+            countElem.innerText = `검색 결과 (${data.length}개 대학)`;
+
+            if (data.length === 0) {
+                grid.innerHTML = `<div class="col-span-full py-12 text-center text-slate-400 bg-white rounded-xl border border-slate-100">조건에 일치하는 대학 정보가 없습니다.</div>`;
+                return;
+            }
+
+            grid.innerHTML = data.map(item => `
+                <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col justify-between hover:shadow-md transition">
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-md">${item.region}</span>
+                            <div class="flex gap-1">
+                                <span class="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded">${item.type}</span>
+                                <span class="bg-emerald-50 text-emerald-700 text-xs px-2 py-0.5 rounded font-medium">${item.category}</span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-900 mb-1">${item.univName}</h3>
+                        <p class="text-indigo-600 font-semibold text-sm mb-4">${item.department} <span class="text-slate-500 font-normal">(${item.capacity || '미정'})</span></p>
+                        
+                        <div class="space-y-2 text-xs text-slate-600 mb-4 border-t border-slate-100 pt-3">
+                            <p><strong><i class="fa-solid fa-user-check text-slate-400 mr-1.5"></i> 지원자격:</strong> ${item.eligibility}</p>
+                            <p><strong><i class="fa-solid fa-clipboard-check text-slate-400 mr-1.5"></i> 전형방법:</strong> ${item.selection}</p>
+                            <p><strong><i class="fa-solid fa-clock text-slate-400 mr-1.5"></i> 수업운영:</strong> ${item.classType}</p>
+                            <p><strong><i class="fa-solid fa-file-lines text-slate-400 mr-1.5"></i> 제출서류:</strong> ${item.docCheck}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="${item.link}" target="_blank" class="w-full block text-center bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium py-2 rounded-lg text-sm transition">
+                            대학 입학처 바로가기 <i class="fa-solid fa-arrow-up-right-from-square ml-1 text-xs"></i>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterData() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const region = document.getElementById('regionFilter').value;
+            const category = document.getElementById('categoryFilter').value;
+            const type = document.getElementById('typeFilter').value;
+
+            const filtered = universities.filter(item => {
+                const matchKeyword = item.univName.toLowerCase().includes(keyword) || item.department.toLowerCase().includes(keyword);
+                const matchRegion = !region || item.region === region;
+                const matchCategory = !category || item.category.includes(category);
+                const matchType = !type || item.type === type;
+                return matchKeyword && matchRegion && matchCategory && matchType;
+            });
+
+            renderCards(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('regionFilter').value = '';
+            document.getElementById('categoryFilter').value = '';
+            document.getElementById('typeFilter').value = '';
+            renderCards(universities);
+        }
+
+        function openAddModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.add('hidden');
+        }
+
+        function saveNewUniv(event) {
+            event.preventDefault();
+            const newUniv = {
+                id: universities.length + 1,
+                univName: document.getElementById('newUnivName').value,
+                region: document.getElementById('newRegion').value,
+                type: document.getElementById('newType').value,
+                category: document.getElementById('newCategory').value,
+                department: document.getElementById('newDepartment').value,
+                capacity: document.getElementById('newCapacity').value,
+                eligibility: document.getElementById('newEligibility').value,
+                selection: document.getElementById('newSelection').value,
+                classType: document.getElementById('newClassType').value,
+                docCheck: document.getElementById('newDocCheck').value,
+                link: document.getElementById('newLink').value || '#'
+            };
+
+            universities.unshift(newUniv);
+            renderCards(universities);
+            closeAddModal();
+            document.getElementById('addForm').reset();
+            alert('새로운 대학 정보가 추가되었습니다!');
+        }
+
+        // Initial Render
+        renderCards(universities);
+    </script>
+</body>
+</html>
